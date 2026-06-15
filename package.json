@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "tsx watch .",
     "format": "pnpx @biomejs/biome check --write",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "license": "ISC",
   "devDependencies": {
@@ -15,10 +21,18 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@commitlint/types": "^21.0.1",
     "@types/node": "^25.9.3",
+    "@types/pg": "^8.20.0",
     "commitlint-config-gitmoji": "^2.3.1",
     "husky": "^8.0.0",
     "lint-staged": "^17.0.7",
+    "prisma": "^7.8.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0"
   }
 }

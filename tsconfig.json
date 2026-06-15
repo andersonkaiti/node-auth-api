@@ -7,7 +7,7 @@
     "module": "nodenext",
     "target": "es2025",
 
-    "esModuleInterop": true,
+    "types": ["node"],
     "skipLibCheck": true,
 
     "allowImportingTsExtensions": true,
