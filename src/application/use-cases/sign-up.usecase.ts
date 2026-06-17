@@ -1,3 +1,4 @@
+import { hash } from 'bcryptjs'
 import type { IAccountsRepository } from '../../domain/repositories/accounts.ts'
 import { AccountAlreadyExists } from '../errors/account-already-exists.ts'
 
@@ -20,10 +21,12 @@ export class SignUpUseCase {
       throw new AccountAlreadyExists()
     }
 
+    const hashedPassword = await hash(password, 8)
+
     await this.accountRepository.createAccount({
       email,
       name,
-      password,
+      password: hashedPassword,
     })
   }
 }
