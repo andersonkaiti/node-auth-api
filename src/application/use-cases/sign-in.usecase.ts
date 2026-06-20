@@ -1,7 +1,7 @@
 import { compare } from 'bcryptjs'
 import jwt, { type SignOptions } from 'jsonwebtoken'
 import type { IAccountsRepository } from '../../domain/repositories/accounts.ts'
-import { InvalidCredentials } from '../errors/invalid-credentials.ts'
+import { Unauthorized } from '../errors/unauthorized-error.ts'
 
 interface IInput {
   email: string
@@ -22,13 +22,13 @@ export class SignInUseCase {
     const account = await this.accountRepository.findAccountByEmail(email)
 
     if (!account) {
-      throw new InvalidCredentials()
+      throw new Unauthorized('Invalid credentials')
     }
 
     const isPasswordValid = await compare(password, account.password)
 
     if (!isPasswordValid) {
-      throw new InvalidCredentials()
+      throw new Unauthorized('Invalid credentials')
     }
 
     const payload = {

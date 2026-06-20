@@ -1,12 +1,5 @@
-export interface IRequest {
-  body: Record<string, unknown>
-}
-
-export interface IResponse {
-  statusCode: number
-  body?: Record<string, unknown> | unknown
-}
+import type { Request, Response } from 'express'
 
 export interface IController {
-  handle(request: IRequest): Promise<IResponse>
+  handle(req: Request, res: Response): Promise<void>
 }

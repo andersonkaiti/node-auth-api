@@ -1,6 +1,6 @@
 import { hash } from 'bcryptjs'
 import type { IAccountsRepository } from '../../domain/repositories/accounts.ts'
-import { AccountAlreadyExists } from '../errors/account-already-exists.ts'
+import { ConflictError } from '../errors/conflict-error.ts'
 
 interface IInputDTO {
   name: string
@@ -18,7 +18,7 @@ export class SignUpUseCase {
       await this.accountRepository.findAccountByEmail(email)
 
     if (accountAlreadyExists) {
-      throw new AccountAlreadyExists()
+      throw new ConflictError('This e-mail is already in use')
     }
 
     const hashedPassword = await hash(password, 8)

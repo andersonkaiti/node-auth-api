@@ -1,11 +1,7 @@
-import { ZodError, z } from 'zod'
-import { InvalidCredentials } from '../../application/errors/invalid-credentials.ts'
+import type { Request, Response } from 'express'
+import { z } from 'zod'
 import type { SignInUseCase } from '../../application/use-cases/sign-in.usecase.ts'
-import type {
-  IController,
-  IRequest,
-  IResponse,
-} from '../interfaces/icontroller.ts'
+import type { IController } from '../interfaces/icontroller.ts'
 
 const signInSchema = z.object({
   email: z.email().min(1),
@@ -15,39 +11,16 @@ const signInSchema = z.object({
 export class SignInController implements IController {
   constructor(private readonly signInUseCase: SignInUseCase) {}
 
-  async handle({ body }: IRequest): Promise<IResponse> {
-    try {
-      const { email, password } = signInSchema.parse(body)
+  async handle(req: Request, res: Response): Promise<void> {
+    const { email, password } = signInSchema.parse(req.body)
 
-      const { accessToken } = await this.signInUseCase.execute({
-        email,
-        password,
-      })
+    const { accessToken } = await this.signInUseCase.execute({
+      email,
+      password,
+    })
 
-      return {
-        statusCode: 200,
-        body: {
-          accessToken,
-        },
-      }
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return {
-          statusCode: 400,
-          body: error.issues,
-        }
-      }
-
-      if (error instanceof InvalidCredentials) {
-        return {
-          statusCode: 401,
-          body: {
-            error: 'Invalid credentials',
-          },
-        }
-      }
-
-      throw error
-    }
+    res.status(200).json({
+      accessToken,
+    })
   }
 }
