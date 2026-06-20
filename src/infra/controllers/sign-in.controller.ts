@@ -1,11 +1,11 @@
 import { ZodError, z } from 'zod'
-import { InvalidCredentials } from '../errors/invalid-credentials.ts'
+import { InvalidCredentials } from '../../application/errors/invalid-credentials.ts'
+import type { SignInUseCase } from '../../application/use-cases/sign-in.usecase.ts'
 import type {
   IController,
   IRequest,
   IResponse,
 } from '../interfaces/icontroller.ts'
-import type { SignInUseCase } from '../use-cases/sign-in.usecase.ts'
 
 const signInSchema = z.object({
   email: z.email().min(1),

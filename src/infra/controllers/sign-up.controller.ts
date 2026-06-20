@@ -1,11 +1,11 @@
 import { ZodError, z } from 'zod'
-import { AccountAlreadyExists } from '../errors/account-already-exists.ts'
+import { AccountAlreadyExists } from '../../application/errors/account-already-exists.ts'
+import type { SignUpUseCase } from '../../application/use-cases/sign-up.usecase.ts'
 import type {
   IController,
   IRequest,
   IResponse,
 } from '../interfaces/icontroller.ts'
-import type { SignUpUseCase } from '../use-cases/sign-up.usecase.ts'
 
 const signUpSchema = z.object({
   name: z.string().min(2),
