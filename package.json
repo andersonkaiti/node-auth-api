@@ -1,10 +1,10 @@
 {
   "name": "node-auth-api",
   "version": "1.0.0",
-  "main": "server.ts",
+  "main": "src/infra/server.ts",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch .",
+    "dev": "tsx --env-file=.env --watch .",
     "format": "pnpx @biomejs/biome check --write",
     "prepare": "husky install",
     "db:generate": "prisma generate",
@@ -21,6 +21,7 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@commitlint/types": "^21.0.1",
     "@types/bcryptjs": "^3.0.0",
+    "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.9.3",
     "@types/pg": "^8.20.0",
@@ -36,6 +37,7 @@
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.21.0",
     "zod": "^4.4.3"
