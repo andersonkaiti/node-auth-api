@@ -1,5 +1,5 @@
 import { compare } from 'bcryptjs'
-import { type SignOptions, sign } from 'jsonwebtoken'
+import jwt, { type SignOptions } from 'jsonwebtoken'
 import type { IAccountsRepository } from '../../domain/repositories/accounts.ts'
 import { InvalidCredentials } from '../errors/invalid-credentials.ts'
 
@@ -39,7 +39,7 @@ export class SignInUseCase {
       expiresIn: '1d',
     }
 
-    const accessToken = sign(payload, this.jwtSecret, options)
+    const accessToken = jwt.sign(payload, this.jwtSecret, options)
 
     return {
       accessToken,
