@@ -21,6 +21,6 @@ export class SignUpController implements IController {
       password,
     })
 
-    res.status(204).send()
+    res.sendStatus(204)
   }
 }
