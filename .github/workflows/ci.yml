@@ -47,6 +47,9 @@ jobs:
       - name: Generate Prisma client
         run: pnpm db:generate
 
+      - name: Typecheck
+        run: pnpm exec tsc
+
       - name: Run migrations
         run: pnpm exec prisma migrate deploy
 
