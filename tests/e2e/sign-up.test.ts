@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
 import { afterAll, describe, expect, it } from 'vitest'
-import { app } from '../../src/infra/app.ts'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
+import { app } from '../../src/infra/http/app.ts'
 
 afterAll(async () => {
   await prisma.account.deleteMany()
@@ -79,19 +79,23 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when name is missing', async () => {
-    const response = await request(app).post('/sign-up').send({
-      email: faker.internet.email(),
-      password: faker.internet.password({ length: 8 }),
-    })
+    const response = await request(app)
+      .post('/sign-up')
+      .send({
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 8 }),
+      })
 
     expect(response.statusCode).toBe(400)
   })
 
   it('should return 400 when email is missing', async () => {
-    const response = await request(app).post('/sign-up').send({
-      name: faker.person.fullName(),
-      password: faker.internet.password({ length: 8 }),
-    })
+    const response = await request(app)
+      .post('/sign-up')
+      .send({
+        name: faker.person.fullName(),
+        password: faker.internet.password({ length: 8 }),
+      })
 
     expect(response.statusCode).toBe(400)
   })
@@ -112,11 +116,13 @@ describe('Sign Up tests', () => {
   })
 
   it('should accept name with exactly 2 characters', async () => {
-    const response = await request(app).post('/sign-up').send({
-      name: 'AB',
-      email: faker.internet.email(),
-      password: faker.internet.password({ length: 8 }),
-    })
+    const response = await request(app)
+      .post('/sign-up')
+      .send({
+        name: 'AB',
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 8 }),
+      })
 
     expect(response.statusCode).toBe(204)
   })
@@ -132,11 +138,13 @@ describe('Sign Up tests', () => {
   })
 
   it('should return no body on success', async () => {
-    const response = await request(app).post('/sign-up').send({
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      password: faker.internet.password({ length: 8 }),
-    })
+    const response = await request(app)
+      .post('/sign-up')
+      .send({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 8 }),
+      })
 
     expect(response.statusCode).toBe(204)
     expect(response.body).toEqual({})

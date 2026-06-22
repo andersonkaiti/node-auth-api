@@ -1,4 +1,4 @@
-import { env } from '../shared/env.ts'
+import { env } from '../../shared/env.ts'
 import { app } from './app.ts'
 
 app.listen(env.PORT, () => {

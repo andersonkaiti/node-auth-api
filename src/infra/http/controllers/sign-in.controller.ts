@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import { z } from 'zod'
-import type { SignInUseCase } from '../../application/use-cases/sign-in.usecase.ts'
+import type { SignInUseCase } from '../../../application/use-cases/sign-in.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
 
 const signInSchema = z.object({

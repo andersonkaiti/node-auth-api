@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { app } from '../../src/infra/app.ts'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
+import { app } from '../../src/infra/http/app.ts'
 
 let accessToken: string
 

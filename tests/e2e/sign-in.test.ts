@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
 import { afterAll, describe, expect, it } from 'vitest'
-import { app } from '../../src/infra/app.ts'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
+import { app } from '../../src/infra/http/app.ts'
 
 afterAll(async () => {
   await prisma.account.deleteMany()
@@ -19,7 +19,9 @@ describe('Sign In tests', () => {
       password,
     })
 
-    const response = await request(app).post('/sign-in').send({ email, password })
+    const response = await request(app)
+      .post('/sign-in')
+      .send({ email, password })
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toHaveProperty('accessToken')
@@ -79,9 +81,11 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when email is missing', async () => {
-    const response = await request(app).post('/sign-in').send({
-      password: faker.internet.password({ length: 8 }),
-    })
+    const response = await request(app)
+      .post('/sign-in')
+      .send({
+        password: faker.internet.password({ length: 8 }),
+      })
 
     expect(response.statusCode).toBe(400)
   })
@@ -110,7 +114,9 @@ describe('Sign In tests', () => {
       password,
     })
 
-    const response = await request(app).post('/sign-in').send({ email, password })
+    const response = await request(app)
+      .post('/sign-in')
+      .send({ email, password })
 
     expect(response.statusCode).toBe(200)
   })
@@ -125,7 +131,9 @@ describe('Sign In tests', () => {
       password,
     })
 
-    const response = await request(app).post('/sign-in').send({ email, password })
+    const response = await request(app)
+      .post('/sign-in')
+      .send({ email, password })
 
     const parts = response.body.accessToken.split('.')
     expect(parts).toHaveLength(3)

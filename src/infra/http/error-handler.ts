@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
-import { ConflictError } from '../application/errors/conflict-error.ts'
-import { Unauthorized } from '../application/errors/unauthorized-error.ts'
+import { ConflictError } from '../../application/errors/conflict-error.ts'
+import { Unauthorized } from '../../application/errors/unauthorized-error.ts'
 
 export function errorHandler(
   error: Error,

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { env } from '../../shared/env.ts'
+import { env } from '../../../shared/env.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
 
 export class AuthenticationMiddleware implements IMiddleware {

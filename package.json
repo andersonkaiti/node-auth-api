@@ -1,7 +1,7 @@
 {
   "name": "node-auth-api",
   "version": "1.0.0",
-  "main": "src/infra/server.ts",
+  "main": "src/infra/http/server.ts",
   "type": "module",
   "scripts": {
     "dev": "tsx --env-file=.env --watch .",
