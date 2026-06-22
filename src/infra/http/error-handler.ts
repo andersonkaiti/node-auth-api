@@ -13,18 +13,24 @@ export function errorHandler(
     res.status(400).json({
       error: error.issues,
     })
+
+    return
   }
 
   if (error instanceof ConflictError) {
     res.status(409).json({
       error: error.message,
     })
+
+    return
   }
 
   if (error instanceof Unauthorized) {
     res.status(401).json({
       error: error.message,
     })
+
+    return
   }
 
   res.status(500).json({
