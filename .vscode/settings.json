@@ -5,5 +5,8 @@
     "source.fixAll.biome": "always",
     "source.organizeImports": "always",
     "source.removeUnusedImports": "always"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma-insider"
   }
 }
