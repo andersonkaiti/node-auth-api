@@ -15,12 +15,14 @@ export class PrismaAccountsRepository implements IAccountsRepository {
     email,
     name,
     password,
+    role,
   }: Omit<IAccount, 'id'>): Promise<void> {
     await prisma.account.create({
       data: {
         email,
         name,
         password,
+        role,
       },
     })
   }
