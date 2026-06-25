@@ -1,7 +1,10 @@
 declare namespace Express {
   interface Request {
     metadata?: {
-      accountId?: string
+      account?: {
+        accountId: string
+        role: 'ADMIN' | 'USER'
+      }
     }
   }
 }

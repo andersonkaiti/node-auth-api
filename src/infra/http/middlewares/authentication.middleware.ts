@@ -6,6 +6,7 @@ import type { IMiddleware } from '../interfaces/imiddleware.ts'
 
 const jwtPayloadSchema = z.object({
   sub: z.string(),
+  role: z.enum(['ADMIN', 'USER']),
 })
 
 export class AuthenticationMiddleware implements IMiddleware {
@@ -34,7 +35,10 @@ export class AuthenticationMiddleware implements IMiddleware {
 
       req.metadata = {
         ...req.metadata,
-        accountId: payload.sub,
+        account: {
+          accountId: payload.sub,
+          role: payload.role,
+        },
       }
 
       next()
