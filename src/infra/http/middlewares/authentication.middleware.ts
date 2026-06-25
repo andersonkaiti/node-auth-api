@@ -1,7 +1,12 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { z } from 'zod'
 import { env } from '../../../shared/env.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
+
+const jwtPayloadSchema = z.object({
+  sub: z.string(),
+})
 
 export class AuthenticationMiddleware implements IMiddleware {
   async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -24,15 +29,8 @@ export class AuthenticationMiddleware implements IMiddleware {
         })
       }
 
-      const payload = jwt.verify(accessToken, env.JWT_SECRET)
-
-      if (typeof payload === 'string' || typeof payload.sub !== 'string') {
-        res.status(401).json({
-          error: 'Invalid access token',
-        })
-
-        return
-      }
+      const rawPayload = jwt.verify(accessToken, env.JWT_SECRET)
+      const payload = jwtPayloadSchema.parse(rawPayload)
 
       req.metadata = {
         ...req.metadata,
