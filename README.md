@@ -1,6 +1,6 @@
 # Node Auth API
 
-API REST de autenticação construída com Node.js e Clean Architecture, com suporte a registro, login e rotas protegidas via JWT.
+API REST de autenticação construída com Node.js e Clean Architecture, com suporte a registro, login e rotas protegidas via JWT e controle de acesso baseado em roles (RBAC).
 
 [![CI](https://github.com/andersonkaiti/node-auth-api/actions/workflows/ci.yml/badge.svg)](https://github.com/andersonkaiti/node-auth-api/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=node.js&logoColor=white)
@@ -60,7 +60,7 @@ flowchart TB
 
 ## Fluxo de Requisição
 
-Exemplo do fluxo em uma rota protegida (`GET /leads`):
+### Rota autenticada (`GET /leads`)
 
 ```mermaid
 sequenceDiagram
@@ -72,8 +72,8 @@ sequenceDiagram
   participant DB as PostgreSQL
 
   C->>MW: GET /leads<br/>Authorization: Bearer {token}
-  MW->>MW: jwt.verify(token)
-  MW->>CT: next() + req.metadata.accountId
+  MW->>MW: jwt.verify(token) + zod.parse(payload)
+  MW->>CT: next() + req.metadata.account
   CT->>UC: execute(accountId)
   UC->>R: findAll()
   R->>DB: SELECT * FROM account
@@ -81,6 +81,27 @@ sequenceDiagram
   R-->>UC: Account[]
   UC-->>CT: Account[]
   CT-->>C: 200 OK { data }
+```
+
+### Rota com autorização por role (`POST /leads`)
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant AMW as AuthMiddleware
+  participant AZW as AuthorizationMiddleware
+  participant H as Handler
+
+  C->>AMW: POST /leads<br/>Authorization: Bearer {token}
+  AMW->>AMW: jwt.verify(token) + zod.parse(payload)
+  AMW->>AZW: next() + req.metadata.account { role }
+  AZW->>AZW: allowedRoles.includes(role)
+  alt role === ADMIN
+    AZW->>H: next()
+    H-->>C: 201 Created
+  else role !== ADMIN
+    AZW-->>C: 403 Access denied
+  end
 ```
 
 ## Modelo de Dados
@@ -92,16 +113,25 @@ erDiagram
     String name
     String email    UK
     String password
+    Role   role
   }
+
+  Role {
+    String ADMIN
+    String USER
+  }
+
+  Account ||--|| Role : "has"
 ```
 
 ## Endpoints
 
-| Método | Rota       | Auth          | Descrição                              |
-|--------|------------|---------------|----------------------------------------|
-| POST   | `/sign-up` | —             | Cria uma nova conta                    |
-| POST   | `/sign-in` | —             | Autentica e retorna um JWT             |
-| GET    | `/leads`   | Bearer token  | Lista contas (rota protegida)          |
+| Método | Rota       | Auth          | Role     | Descrição                              |
+|--------|------------|---------------|----------|----------------------------------------|
+| POST   | `/sign-up` | —             | —        | Cria uma nova conta                    |
+| POST   | `/sign-in` | —             | —        | Autentica e retorna um JWT             |
+| GET    | `/leads`   | Bearer token  | USER+    | Lista contas (rota autenticada)        |
+| POST   | `/leads`   | Bearer token  | ADMIN    | Cria um lead (rota restrita a admins)  |
 
 ## Como executar
 
