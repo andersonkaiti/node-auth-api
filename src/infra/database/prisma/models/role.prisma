@@ -1,0 +1,7 @@
+model Role {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String
+  accounts Account[]
+
+  @@map("roles")
+}
