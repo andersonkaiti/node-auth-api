@@ -1,6 +1,6 @@
 # Node Auth API
 
-API REST de autenticação construída com Node.js e Clean Architecture, com suporte a registro, login e rotas protegidas via JWT e controle de acesso baseado em roles (RBAC).
+API REST de autenticação construída com Node.js e Clean Architecture, com suporte a registro, login e rotas protegidas via JWT e controle de acesso baseado em permissões (RBAC).
 
 [![CI](https://github.com/andersonkaiti/node-auth-api/actions/workflows/ci.yml/badge.svg)](https://github.com/andersonkaiti/node-auth-api/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=node.js&logoColor=white)
@@ -73,33 +73,38 @@ sequenceDiagram
 
   C->>MW: GET /leads<br/>Authorization: Bearer {token}
   MW->>MW: jwt.verify(token) + zod.parse(payload)
-  MW->>CT: next() + req.metadata.account
+  MW->>CT: next() + req.metadata.account { accountId, role }
   CT->>UC: execute(accountId)
   UC->>R: findAll()
-  R->>DB: SELECT * FROM account
+  R->>DB: SELECT * FROM accounts
   DB-->>R: rows
   R-->>UC: Account[]
   UC-->>CT: Account[]
   CT-->>C: 200 OK { data }
 ```
 
-### Rota com autorização por role (`POST /leads`)
+### Rota com autorização por permissão (`POST /leads`)
 
 ```mermaid
 sequenceDiagram
   participant C as Client
   participant AMW as AuthMiddleware
   participant AZW as AuthorizationMiddleware
+  participant UC as GetRolePermissionsUseCase
+  participant DB as PostgreSQL
   participant H as Handler
 
   C->>AMW: POST /leads<br/>Authorization: Bearer {token}
   AMW->>AMW: jwt.verify(token) + zod.parse(payload)
-  AMW->>AZW: next() + req.metadata.account { role }
-  AZW->>AZW: allowedRoles.includes(role)
-  alt role === ADMIN
+  AMW->>AZW: next() + req.metadata.account { accountId, role: roleId }
+  AZW->>UC: execute({ roleId })
+  UC->>DB: SELECT permission_code FROM roles_permissions WHERE role_id = ?
+  DB-->>UC: permission rows
+  UC-->>AZW: { permissionCodes: string[] }
+  alt permissionCodes.includes('leads:write')
     AZW->>H: next()
     H-->>C: 201 Created
-  else role !== ADMIN
+  else permission denied
     AZW-->>C: 403 Access denied
   end
 ```
@@ -108,30 +113,52 @@ sequenceDiagram
 
 ```mermaid
 erDiagram
-  Account {
-    UUID   id       PK
+  accounts {
+    UUID   id          PK
     String name
-    String email    UK
+    String email       UK
     String password
-    Role   role
+    UUID   role_id     FK
   }
 
-  Role {
-    String ADMIN
-    String USER
+  roles {
+    UUID   id    PK
+    String name
   }
 
-  Account ||--|| Role : "has"
+  permissions {
+    UUID   id    PK
+    String name
+    String code  UK
+  }
+
+  roles_permissions {
+    UUID   role_id         FK
+    String permission_code FK
+  }
+
+  accounts }o--|| roles : "has"
+  roles ||--o{ roles_permissions : "has"
+  permissions ||--o{ roles_permissions : "has"
 ```
 
 ## Endpoints
 
-| Método | Rota       | Auth          | Role     | Descrição                              |
-|--------|------------|---------------|----------|----------------------------------------|
-| POST   | `/sign-up` | —             | —        | Cria uma nova conta                    |
-| POST   | `/sign-in` | —             | —        | Autentica e retorna um JWT             |
-| GET    | `/leads`   | Bearer token  | USER+    | Lista contas (rota autenticada)        |
-| POST   | `/leads`   | Bearer token  | ADMIN    | Cria um lead (rota restrita a admins)  |
+| Método | Rota       | Auth          | Permissão      | Descrição                              |
+|--------|------------|---------------|----------------|----------------------------------------|
+| POST   | `/sign-up` | —             | —              | Cria uma nova conta                    |
+| POST   | `/sign-in` | —             | —              | Autentica e retorna um JWT             |
+| GET    | `/leads`   | Bearer token  | `leads:read`   | Lista contas (rota autenticada)        |
+| POST   | `/leads`   | Bearer token  | `leads:write`  | Cria um lead (rota restrita)           |
+
+## RBAC (Role-Based Access Control)
+
+A autorização é gerenciada por **permissões granulares** vinculadas a roles via tabela pivô:
+
+- **Roles** definem grupos de acesso (ex.: `ADMIN`, `USER`)
+- **Permissions** definem ações específicas com códigos únicos (ex.: `leads:read`, `leads:write`)
+- **roles_permissions** vincula quais permissões cada role possui
+- O JWT carrega o `roleId`, e o middleware de autorização consulta as permissões da role em tempo de requisição
 
 ## Como executar
 
