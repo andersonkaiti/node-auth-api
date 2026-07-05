@@ -7,6 +7,7 @@ import { app } from '../../src/infra/http/app.ts'
 let accessToken: string
 
 beforeAll(async () => {
+  const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
   const email = faker.internet.email()
   const password = faker.internet.password({ length: 8 })
 
@@ -14,6 +15,7 @@ beforeAll(async () => {
     name: faker.person.fullName(),
     email,
     password,
+    roleId: userRole!.id,
   })
 
   const response = await request(app).post('/sign-in').send({ email, password })

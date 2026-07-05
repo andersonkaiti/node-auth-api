@@ -13,13 +13,14 @@ beforeAll(async () => {
   const hashedPassword = await hash(password, 8)
 
   const adminEmail = faker.internet.email()
+  const adminRole = await prisma.role.findFirst({ where: { name: 'ADMIN' } })
 
   await prisma.account.create({
     data: {
       name: faker.person.fullName(),
       email: adminEmail,
       password: hashedPassword,
-      role: 'ADMIN',
+      roleId: adminRole!.id,
     },
   })
 
@@ -29,12 +30,14 @@ beforeAll(async () => {
 
   adminAccessToken = adminSignIn.body.accessToken
 
+  const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
   const userEmail = faker.internet.email()
 
   await request(app).post('/sign-up').send({
     name: faker.person.fullName(),
     email: userEmail,
     password,
+    roleId: userRole!.id,
   })
 
   const userSignIn = await request(app)
