@@ -5,7 +5,7 @@ model Account {
   password String
 
   role   Role   @relation(fields: [roleId], references: [id])
-  roleId String @db.Uuid
+  roleId String @map("role_id") @db.Uuid
 
   @@map("accounts")
 }
