@@ -1,6 +1,8 @@
 model RolePermission {
-  roleId         String @map("role_id") @db.Uuid()
-  permissionCode String @map("permission_code")
+  roleId         String     @map("role_id") @db.Uuid()
+  permissionCode String     @map("permission_code")
+  role           Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission     Permission @relation(fields: [permissionCode], references: [code], onDelete: Cascade)
 
   @@id([roleId, permissionCode])
   @@map("roles_permissions")

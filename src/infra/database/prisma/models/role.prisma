@@ -1,7 +1,8 @@
 model Role {
-  id       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name     String
-  accounts Account[]
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  accounts    Account[]
+  permissions RolePermission[]
 
   @@map("roles")
 }
