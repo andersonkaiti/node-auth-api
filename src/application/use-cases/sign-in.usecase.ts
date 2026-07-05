@@ -14,12 +14,12 @@ interface IOutput {
 
 export class SignInUseCase {
   constructor(
-    private readonly accountRepository: IAccountsRepository,
+    private readonly accountsRepository: IAccountsRepository,
     private readonly jwtSecret: string,
   ) {}
 
   async execute({ email, password }: IInput): Promise<IOutput> {
-    const account = await this.accountRepository.findAccountByEmail(email)
+    const account = await this.accountsRepository.findAccountByEmail(email)
 
     if (!account) {
       throw new Unauthorized('Invalid credentials')

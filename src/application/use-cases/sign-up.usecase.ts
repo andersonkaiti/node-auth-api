@@ -12,7 +12,7 @@ interface IInputDTO {
 type IOutputDTO = void
 
 export class SignUpUseCase {
-  constructor(private readonly accountRepository: IAccountsRepository) {}
+  constructor(private readonly accountsRepository: IAccountsRepository) {}
 
   async execute({
     email,
@@ -21,7 +21,7 @@ export class SignUpUseCase {
     roleId,
   }: IInputDTO): Promise<IOutputDTO> {
     const accountAlreadyExists =
-      await this.accountRepository.findAccountByEmail(email)
+      await this.accountsRepository.findAccountByEmail(email)
 
     if (accountAlreadyExists) {
       throw new ConflictError('This e-mail is already in use')
@@ -29,7 +29,7 @@ export class SignUpUseCase {
 
     const hashedPassword = await hash(password, 8)
 
-    await this.accountRepository.createAccount({
+    await this.accountsRepository.createAccount({
       email,
       name,
       password: hashedPassword,
