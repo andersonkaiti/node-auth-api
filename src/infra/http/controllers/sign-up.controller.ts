@@ -7,18 +7,20 @@ const signUpSchema = z.object({
   name: z.string().min(2),
   email: z.email().min(1),
   password: z.string().min(8),
+  roleId: z.uuid(),
 })
 
 export class SignUpController implements IController {
   constructor(private readonly signUpUseCase: SignUpUseCase) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { email, name, password } = signUpSchema.parse(req.body)
+    const { email, name, password, roleId } = signUpSchema.parse(req.body)
 
     await this.signUpUseCase.execute({
       email,
       name,
       password,
+      roleId,
     })
 
     res.sendStatus(204)

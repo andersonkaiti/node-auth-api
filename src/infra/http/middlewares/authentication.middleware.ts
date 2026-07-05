@@ -6,7 +6,7 @@ import type { IMiddleware } from '../interfaces/imiddleware.ts'
 
 const jwtPayloadSchema = z.object({
   sub: z.string(),
-  role: z.enum(['ADMIN', 'USER']),
+  role: z.uuid(),
 })
 
 export class AuthenticationMiddleware implements IMiddleware {

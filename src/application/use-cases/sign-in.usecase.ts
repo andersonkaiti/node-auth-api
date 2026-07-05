@@ -33,7 +33,7 @@ export class SignInUseCase {
 
     const payload = {
       sub: account.id,
-      role: account.role,
+      role: account.roleId,
     }
 
     const options: SignOptions = {

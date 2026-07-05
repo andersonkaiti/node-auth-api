@@ -3,7 +3,7 @@ declare namespace Express {
     metadata?: {
       account?: {
         accountId: string
-        role: 'ADMIN' | 'USER'
+        role: string
       }
     }
   }

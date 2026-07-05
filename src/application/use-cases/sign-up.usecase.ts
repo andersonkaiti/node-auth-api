@@ -6,6 +6,7 @@ interface IInputDTO {
   name: string
   email: string
   password: string
+  roleId: string
 }
 
 type IOutputDTO = void
@@ -13,7 +14,12 @@ type IOutputDTO = void
 export class SignUpUseCase {
   constructor(private readonly accountRepository: IAccountsRepository) {}
 
-  async execute({ email, name, password }: IInputDTO): Promise<IOutputDTO> {
+  async execute({
+    email,
+    name,
+    password,
+    roleId,
+  }: IInputDTO): Promise<IOutputDTO> {
     const accountAlreadyExists =
       await this.accountRepository.findAccountByEmail(email)
 
@@ -27,7 +33,7 @@ export class SignUpUseCase {
       email,
       name,
       password: hashedPassword,
-      role: 'USER',
+      roleId,
     })
   }
 }
