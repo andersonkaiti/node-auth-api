@@ -4,6 +4,7 @@ import { routeAdapter } from './adapters/route-adapter.ts'
 import { errorHandler } from './error-handler.ts'
 import { makeAuthenticationMiddleware } from './factories/make-authentication-middleware.factory.ts'
 import { makeAuthorizationMiddleware } from './factories/make-authorization-middleware.factory.ts'
+import { makeCreateLeadController } from './factories/make-create-lead-controller.factory.ts'
 import { makeListLeadsController } from './factories/make-list-leads-controller.factory.ts'
 import { makeSignInController } from './factories/make-sign-in-controller.factory.ts'
 import { makeSignUpController } from './factories/make-sign-up-controller.factory.ts'
@@ -25,7 +26,7 @@ app.post(
   '/leads',
   middlewareAdapter(makeAuthenticationMiddleware()),
   middlewareAdapter(makeAuthorizationMiddleware(['leads:write'])),
-  (_req, res) => res.sendStatus(201),
+  routeAdapter(makeCreateLeadController()),
 )
 
 app.use(errorHandler)
