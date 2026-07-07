@@ -1,8 +1,8 @@
-import type { ILead } from '../../../domain/entities/lead.ts'
-import type { ILeadsRepository } from '../../../domain/repositories/leads.ts'
+import type { ILead } from '../../../domain/entities/lead.entity.ts'
+import type { ILeadsRepository } from '../../../domain/repositories/leads.repository.ts'
 import { prisma } from '../prisma/index.ts'
 
-export class PrismaLeadsRepository implements ILeadsRepository {
+export class LeadsRepository implements ILeadsRepository {
   async listLeads(): Promise<ILead[]> {
     return await prisma.lead.findMany()
   }

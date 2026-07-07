@@ -1,5 +1,5 @@
-import type { ILeadsRepository } from '../../domain/repositories/leads.ts'
-import { ConflictError } from '../errors/conflict-error.ts'
+import type { ILeadsRepository } from '../../domain/repositories/leads.repository.ts'
+import { ConflictError } from '../errors/conflict.error.ts'
 
 interface IInput {
   name: string

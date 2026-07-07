@@ -1,8 +1,8 @@
 import { SignUpUseCase } from '../../../application/use-cases/sign-up.usecase.ts'
-import { PrismaAccountsRepository } from '../../database/repositories/prisma-accounts-repository.ts'
+import { AccountsRepository } from '../../database/repositories/accounts.repository.ts'
 
 export function makeSignUpUseCase() {
-  const accountsRepository = new PrismaAccountsRepository()
+  const accountsRepository = new AccountsRepository()
 
   return new SignUpUseCase(accountsRepository)
 }

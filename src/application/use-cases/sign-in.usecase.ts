@@ -1,7 +1,7 @@
 import { compare } from 'bcryptjs'
 import jwt, { type SignOptions } from 'jsonwebtoken'
-import type { IAccountsRepository } from '../../domain/repositories/accounts.ts'
-import { Unauthorized } from '../errors/unauthorized-error.ts'
+import type { IAccountsRepository } from '../../domain/repositories/accounts.repository.ts'
+import { Unauthorized } from '../errors/unauthorized.error.ts'
 
 interface IInput {
   email: string

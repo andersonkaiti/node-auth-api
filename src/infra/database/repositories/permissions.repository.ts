@@ -1,8 +1,8 @@
-import type { IPermission } from '../../../domain/entities/permission.ts'
-import type { IPermissionsRepository } from '../../../domain/repositories/permissions.ts'
+import type { IPermission } from '../../../domain/entities/permission.entity.ts'
+import type { IPermissionsRepository } from '../../../domain/repositories/permissions.repository.ts'
 import { prisma } from '../prisma/index.ts'
 
-export class PrismaPermissionsRepository implements IPermissionsRepository {
+export class PermissionsRepository implements IPermissionsRepository {
   async findPermissionsByRoleId(
     roleId: string,
   ): Promise<Pick<IPermission, 'permissionCode'>[]> {

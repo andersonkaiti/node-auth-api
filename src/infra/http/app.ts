@@ -1,6 +1,6 @@
 import express, { type Express } from 'express'
-import { middlewareAdapter } from './adapters/middleware-adapter.ts'
-import { routeAdapter } from './adapters/route-adapter.ts'
+import { middlewareAdapter } from './adapters/middleware.adapter.ts'
+import { routeAdapter } from './adapters/route.adapter.ts'
 import { errorHandler } from './error-handler.ts'
 import { makeAuthenticationMiddleware } from './factories/make-authentication-middleware.factory.ts'
 import { makeAuthorizationMiddleware } from './factories/make-authorization-middleware.factory.ts'
