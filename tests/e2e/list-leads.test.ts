@@ -13,19 +13,27 @@ beforeAll(async () => {
   const hashedPassword = await hash(password, 8)
 
   const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
+  if (!userRole) {
+    throw new Error('USER role not found')
+  }
   const userEmail = faker.internet.email()
 
   await request(app).post('/sign-up').send({
     name: faker.person.fullName(),
     email: userEmail,
     password,
-    roleId: userRole!.id,
+    roleId: userRole.id,
   })
 
-  const userSignIn = await request(app).post('/sign-in').send({ email: userEmail, password })
+  const userSignIn = await request(app)
+    .post('/sign-in')
+    .send({ email: userEmail, password })
   userAccessToken = userSignIn.body.accessToken
 
   const adminRole = await prisma.role.findFirst({ where: { name: 'ADMIN' } })
+  if (!adminRole) {
+    throw new Error('ADMIN role not found')
+  }
   const adminEmail = faker.internet.email()
 
   await prisma.account.create({
@@ -33,11 +41,13 @@ beforeAll(async () => {
       name: faker.person.fullName(),
       email: adminEmail,
       password: hashedPassword,
-      roleId: adminRole!.id,
+      roleId: adminRole.id,
     },
   })
 
-  const adminSignIn = await request(app).post('/sign-in').send({ email: adminEmail, password })
+  const adminSignIn = await request(app)
+    .post('/sign-in')
+    .send({ email: adminEmail, password })
   adminAccessToken = adminSignIn.body.accessToken
 })
 

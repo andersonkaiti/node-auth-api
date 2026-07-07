@@ -14,30 +14,40 @@ beforeAll(async () => {
 
   const adminEmail = faker.internet.email()
   const adminRole = await prisma.role.findFirst({ where: { name: 'ADMIN' } })
+  if (!adminRole) {
+    throw new Error('ADMIN role not found')
+  }
 
   await prisma.account.create({
     data: {
       name: faker.person.fullName(),
       email: adminEmail,
       password: hashedPassword,
-      roleId: adminRole!.id,
+      roleId: adminRole.id,
     },
   })
 
-  const adminSignIn = await request(app).post('/sign-in').send({ email: adminEmail, password })
+  const adminSignIn = await request(app)
+    .post('/sign-in')
+    .send({ email: adminEmail, password })
   adminAccessToken = adminSignIn.body.accessToken
 
   const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
+  if (!userRole) {
+    throw new Error('USER role not found')
+  }
   const userEmail = faker.internet.email()
 
   await request(app).post('/sign-up').send({
     name: faker.person.fullName(),
     email: userEmail,
     password,
-    roleId: userRole!.id,
+    roleId: userRole.id,
   })
 
-  const userSignIn = await request(app).post('/sign-in').send({ email: userEmail, password })
+  const userSignIn = await request(app)
+    .post('/sign-in')
+    .send({ email: userEmail, password })
   userAccessToken = userSignIn.body.accessToken
 })
 
@@ -67,7 +77,9 @@ describe('Create Lead tests', () => {
       .send({ name: faker.person.fullName(), email })
 
     expect(response.statusCode).toBe(409)
-    expect(response.body).toEqual({ error: 'Another lead have the same e-mail' })
+    expect(response.body).toEqual({
+      error: 'Another lead have the same e-mail',
+    })
   })
 
   it('should return 403 when authenticated as USER', async () => {

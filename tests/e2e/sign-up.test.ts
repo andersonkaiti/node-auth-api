@@ -8,7 +8,10 @@ let userRoleId: string
 
 beforeAll(async () => {
   const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
-  userRoleId = userRole!.id
+  if (!userRole) {
+    throw new Error('USER role not found')
+  }
+  userRoleId = userRole.id
 })
 
 afterAll(async () => {
