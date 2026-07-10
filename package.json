@@ -8,6 +8,7 @@
     "start": "tsx --env-file=.env .",
     "build": "tsup",
     "format": "pnpx @biomejs/biome check --write",
+    "postinstall": "prisma generate",
     "prepare": "husky install",
     "test": "vitest",
     "coverage": "vitest run --coverage",
