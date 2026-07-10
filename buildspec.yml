@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  variables:
+    S3_BUCKET: node-auth-api
+    S3_KEY: dist.zip
+
 phases:
   install:
     runtime-versions:
@@ -18,4 +23,5 @@ phases:
   
   post_build:
     commands:
-      - aws lambda update-function-code --function-name node-auth-api --zip-file fileb://dist.zip
+      - aws s3 cp dist.zip s3://$S3_BUCKET/$S3_KEY
+      - aws lambda update-function-code --function-name node-auth-api --s3-bucket $S3_BUCKET --s3-key $S3_KEY
