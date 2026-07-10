@@ -231,9 +231,6 @@ importers:
       pg:
         specifier: ^8.21.0
         version: 8.21.0
-      supertest:
-        specifier: ^7.2.2
-        version: 7.2.2
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -283,6 +280,9 @@ importers:
       prisma:
         specifier: ^7.8.0
         version: 7.8.0(@types/react@19.2.17)(magicast@0.5.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
+      supertest:
+        specifier: ^7.2.2
+        version: 7.2.2
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.15)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.9.0)
