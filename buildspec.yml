@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+  
+  pre_build:
+    commands:
+      - npm install -g pnpm
+      - pnpm install --frozen-lockfile
+  
+  build:
+    commands:
+      - pnpm run build
+      - pnpm install --prod --ignore-scripts
+      - zip -r dist.zip ./dist node_modules
+  
+  post_build:
+    commands:
+      - aws lambda update-function-code --function-name node-auth-api --zip-file fileb://dist.zip
