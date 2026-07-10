@@ -1,4 +1,4 @@
-import express, { type Express } from 'express'
+import { Hono } from 'hono'
 import { middlewareAdapter } from './adapters/middleware.adapter.ts'
 import { routeAdapter } from './adapters/route.adapter.ts'
 import { errorHandler } from './error-handler.ts'
@@ -8,10 +8,11 @@ import { makeCreateLeadController } from './factories/make-create-lead-controlle
 import { makeListLeadsController } from './factories/make-list-leads-controller.factory.ts'
 import { makeSignInController } from './factories/make-sign-in-controller.factory.ts'
 import { makeSignUpController } from './factories/make-sign-up-controller.factory.ts'
+import type { AppEnv } from './types/app-context.ts'
 
-export const app: Express = express()
+export const app = new Hono<AppEnv>()
 
-app.use(express.json())
+app.get('/', (c) => c.json({ message: 'Node Auth API' }, 200))
 
 app.post('/sign-up', routeAdapter(makeSignUpController()))
 app.post('/sign-in', routeAdapter(makeSignInController()))
@@ -29,4 +30,4 @@ app.post(
   routeAdapter(makeCreateLeadController()),
 )
 
-app.use(errorHandler)
+app.onError(errorHandler)

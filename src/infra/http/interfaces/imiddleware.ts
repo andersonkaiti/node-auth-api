@@ -1,5 +1,6 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Next } from 'hono'
+import type { AppContext } from '../types/app-context.ts'
 
 export interface IMiddleware {
-  handle(req: Request, res: Response, next: NextFunction): Promise<void>
+  handle(c: AppContext, next: Next): Promise<Response | void>
 }

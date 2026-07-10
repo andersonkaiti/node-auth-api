@@ -1,8 +1,11 @@
+import { createAdaptorServer } from '@hono/node-server'
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
 import { app } from '../../src/infra/http/app.ts'
+
+const server = createAdaptorServer(app)
 
 let userRoleId: string
 
@@ -20,7 +23,7 @@ afterAll(async () => {
 
 describe('Sign Up tests', () => {
   it('should create an account', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -35,7 +38,7 @@ describe('Sign Up tests', () => {
   it('should return 409 when email is already in use', async () => {
     const email = faker.internet.email()
 
-    await request(app)
+    await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -44,7 +47,7 @@ describe('Sign Up tests', () => {
         roleId: userRoleId,
       })
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -58,7 +61,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when name is shorter than 2 characters', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: 'A',
@@ -70,7 +73,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when email is invalid', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -82,7 +85,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when password is shorter than 8 characters', async () => {
-    const response = await request(app).post('/sign-up').send({
+    const response = await request(server).post('/sign-up').send({
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: '1234567',
@@ -92,7 +95,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when name is missing', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         email: faker.internet.email(),
@@ -103,7 +106,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when email is missing', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -114,7 +117,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when password is missing', async () => {
-    const response = await request(app).post('/sign-up').send({
+    const response = await request(server).post('/sign-up').send({
       name: faker.person.fullName(),
       email: faker.internet.email(),
     })
@@ -123,13 +126,13 @@ describe('Sign Up tests', () => {
   })
 
   it('should return 400 when body is empty', async () => {
-    const response = await request(app).post('/sign-up').send({})
+    const response = await request(server).post('/sign-up').send({})
 
     expect(response.statusCode).toBe(400)
   })
 
   it('should accept name with exactly 2 characters', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: 'AB',
@@ -142,7 +145,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should accept password with exactly 8 characters', async () => {
-    const response = await request(app).post('/sign-up').send({
+    const response = await request(server).post('/sign-up').send({
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: '12345678',
@@ -153,7 +156,7 @@ describe('Sign Up tests', () => {
   })
 
   it('should return no body on success', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),

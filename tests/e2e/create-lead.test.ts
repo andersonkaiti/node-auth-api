@@ -1,9 +1,12 @@
+import { createAdaptorServer } from '@hono/node-server'
 import { faker } from '@faker-js/faker'
 import { hash } from 'bcryptjs'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
 import { app } from '../../src/infra/http/app.ts'
+
+const server = createAdaptorServer(app)
 
 let adminAccessToken: string
 let userAccessToken: string
@@ -27,7 +30,7 @@ beforeAll(async () => {
     },
   })
 
-  const adminSignIn = await request(app)
+  const adminSignIn = await request(server)
     .post('/sign-in')
     .send({ email: adminEmail, password })
   adminAccessToken = adminSignIn.body.accessToken
@@ -38,14 +41,14 @@ beforeAll(async () => {
   }
   const userEmail = faker.internet.email()
 
-  await request(app).post('/sign-up').send({
+  await request(server).post('/sign-up').send({
     name: faker.person.fullName(),
     email: userEmail,
     password,
     roleId: userRole.id,
   })
 
-  const userSignIn = await request(app)
+  const userSignIn = await request(server)
     .post('/sign-in')
     .send({ email: userEmail, password })
   userAccessToken = userSignIn.body.accessToken
@@ -58,7 +61,7 @@ afterAll(async () => {
 
 describe('Create Lead tests', () => {
   it('should create a lead when authenticated as ADMIN', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({ name: faker.person.fullName(), email: faker.internet.email() })
@@ -71,7 +74,7 @@ describe('Create Lead tests', () => {
 
     await prisma.lead.create({ data: { name: faker.person.fullName(), email } })
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({ name: faker.person.fullName(), email })
@@ -83,7 +86,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 403 when authenticated as USER', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${userAccessToken}`)
       .send({ name: faker.person.fullName(), email: faker.internet.email() })
@@ -93,7 +96,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 400 when name is missing', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({ email: faker.internet.email() })
@@ -102,7 +105,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 400 when email is invalid', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({ name: faker.person.fullName(), email: 'not-an-email' })
@@ -111,7 +114,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 400 when email is missing', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({ name: faker.person.fullName() })
@@ -120,7 +123,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 400 when body is empty', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Bearer ${adminAccessToken}`)
       .send({})
@@ -129,14 +132,14 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 401 when Authorization header is missing', async () => {
-    const response = await request(app).post('/leads')
+    const response = await request(server).post('/leads')
 
     expect(response.statusCode).toBe(401)
     expect(response.body).toEqual({ error: 'Invalid access token' })
   })
 
   it('should return 401 when prefix is not Bearer', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', `Token ${adminAccessToken}`)
 
@@ -145,7 +148,7 @@ describe('Create Lead tests', () => {
   })
 
   it('should return 401 when token is invalid', async () => {
-    const response = await request(app)
+    const response = await request(server)
       .post('/leads')
       .set('Authorization', 'Bearer invalid.token.value')
 

@@ -1,7 +1,7 @@
-import type { Request, Response } from 'express'
 import { z } from 'zod'
 import type { SignUpUseCase } from '../../../application/use-cases/sign-up.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
+import type { AppContext } from '../types/app-context.ts'
 
 const signUpSchema = z.object({
   name: z.string().min(2),
@@ -13,16 +13,12 @@ const signUpSchema = z.object({
 export class SignUpController implements IController {
   constructor(private readonly signUpUseCase: SignUpUseCase) {}
 
-  async handle(req: Request, res: Response): Promise<void> {
-    const { email, name, password, roleId } = signUpSchema.parse(req.body)
+  async handle(c: AppContext): Promise<Response> {
+    const body = await c.req.json()
+    const { email, name, password, roleId } = signUpSchema.parse(body)
 
-    await this.signUpUseCase.execute({
-      email,
-      name,
-      password,
-      roleId,
-    })
+    await this.signUpUseCase.execute({ email, name, password, roleId })
 
-    res.sendStatus(204)
+    return c.body(null, 204)
   }
 }

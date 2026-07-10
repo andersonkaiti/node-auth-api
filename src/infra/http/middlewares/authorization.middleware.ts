@@ -1,6 +1,7 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Next } from 'hono'
 import type { GetRolePermissionsUseCase } from '../../../application/use-cases/get-role-permissions.usecase.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
+import type { AppContext } from '../types/app-context.ts'
 
 export class AuthorizationMiddleware implements IMiddleware {
   constructor(
@@ -8,21 +9,15 @@ export class AuthorizationMiddleware implements IMiddleware {
     private readonly getRolePermissionsUseCase: GetRolePermissionsUseCase,
   ) {}
 
-  async handle(
-    { metadata }: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    if (!metadata?.account) {
-      res.status(403).json({
-        error: 'Access denied',
-      })
+  async handle(c: AppContext, next: Next): Promise<Response | void> {
+    const account = c.get('account')
 
-      return
+    if (!account) {
+      return c.json({ error: 'Access denied' }, 403)
     }
 
     const { permissionCodes } = await this.getRolePermissionsUseCase.execute({
-      roleId: metadata.account.role,
+      roleId: account.role,
     })
 
     const isAllowed = this.requiredPermissions.some((code) =>
@@ -30,13 +25,9 @@ export class AuthorizationMiddleware implements IMiddleware {
     )
 
     if (!isAllowed) {
-      res.status(403).json({
-        error: 'Access denied',
-      })
-
-      return
+      return c.json({ error: 'Access denied' }, 403)
     }
 
-    next()
+    await next()
   }
 }

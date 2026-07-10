@@ -1,7 +1,7 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Next } from 'hono'
+import type { AppContext } from '../types/app-context.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
 
 export function middlewareAdapter(middleware: IMiddleware) {
-  return async (req: Request, res: Response, next: NextFunction) =>
-    await middleware.handle(req, res, next)
+  return (c: AppContext, next: Next) => middleware.handle(c, next)
 }
