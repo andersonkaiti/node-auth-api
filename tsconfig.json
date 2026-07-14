@@ -11,6 +11,22 @@
     "skipLibCheck": true,
 
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@application/*": ["./src/application/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@infra/*": ["./src/infra/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@use-cases/*": ["./src/application/use-cases/*"],
+      "@errors/*": ["./src/application/errors/*"],
+      "@entities/*": ["./src/domain/entities/*"],
+      "@repositories/*": ["./src/domain/repositories/*"],
+      "@controllers/*": ["./src/infra/http/controllers/*"],
+      "@middlewares/*": ["./src/infra/http/middlewares/*"],
+      "@factories/*": ["./src/infra/http/factories/*"],
+      "@database/*": ["./src/infra/database/*"]
+    }
   }
 }

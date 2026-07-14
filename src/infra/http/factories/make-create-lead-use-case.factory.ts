@@ -1,5 +1,5 @@
-import { CreateLeadUseCase } from '../../../application/use-cases/create-lead.usecase.ts'
-import { LeadsRepository } from '../../database/repositories/leads.repository.ts'
+import { LeadsRepository } from '@database/repositories/leads.repository.ts'
+import { CreateLeadUseCase } from '@use-cases/create-lead.usecase.ts'
 
 export function makeCreateLeadUseCase() {
   const leadsRepository = new LeadsRepository()

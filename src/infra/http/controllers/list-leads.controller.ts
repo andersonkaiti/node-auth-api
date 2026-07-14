@@ -1,4 +1,4 @@
-import type { ListLeadsUseCase } from '../../../application/use-cases/list-leads.usecase.ts'
+import type { ListLeadsUseCase } from '@use-cases/list-leads.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
 import type { AppContext } from '../types/app-context.ts'
 

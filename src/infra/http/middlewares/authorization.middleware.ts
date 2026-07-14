@@ -1,5 +1,5 @@
+import type { GetRolePermissionsUseCase } from '@use-cases/get-role-permissions.usecase.ts'
 import type { Next } from 'hono'
-import type { GetRolePermissionsUseCase } from '../../../application/use-cases/get-role-permissions.usecase.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
 import type { AppContext } from '../types/app-context.ts'
 

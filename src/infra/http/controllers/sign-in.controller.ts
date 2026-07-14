@@ -1,5 +1,5 @@
+import type { SignInUseCase } from '@use-cases/sign-in.usecase.ts'
 import { z } from 'zod'
-import type { SignInUseCase } from '../../../application/use-cases/sign-in.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
 import type { AppContext } from '../types/app-context.ts'
 
@@ -15,7 +15,10 @@ export class SignInController implements IController {
     const body = await c.req.json()
     const { email, password } = signInSchema.parse(body)
 
-    const { accessToken } = await this.signInUseCase.execute({ email, password })
+    const { accessToken } = await this.signInUseCase.execute({
+      email,
+      password,
+    })
 
     return c.json({ accessToken }, 200)
   }

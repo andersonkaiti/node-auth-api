@@ -1,5 +1,5 @@
-import { createAdaptorServer } from '@hono/node-server'
 import { faker } from '@faker-js/faker'
+import { createAdaptorServer } from '@hono/node-server'
 import { hash } from 'bcryptjs'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'

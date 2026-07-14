@@ -1,6 +1,6 @@
+import { ConflictError } from '@errors/conflict.error.ts'
+import type { IAccountsRepository } from '@repositories/accounts.repository.ts'
 import { hash } from 'bcryptjs'
-import type { IAccountsRepository } from '../../domain/repositories/accounts.repository.ts'
-import { ConflictError } from '../errors/conflict.error.ts'
 
 interface IInputDTO {
   name: string

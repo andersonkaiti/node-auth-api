@@ -1,4 +1,4 @@
-import type { IPermissionsRepository } from '../../domain/repositories/permissions.repository.ts'
+import type { IPermissionsRepository } from '@repositories/permissions.repository.ts'
 
 interface IInput {
   roleId: string

@@ -1,5 +1,5 @@
 import { serve } from '@hono/node-server'
-import { env } from '../../shared/env.ts'
+import { env } from '@shared/env.ts'
 import { app } from './app.ts'
 
 serve({ fetch: app.fetch, port: env.PORT }, (info) => {

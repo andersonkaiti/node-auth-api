@@ -1,7 +1,7 @@
+import { ConflictError } from '@errors/conflict.error.ts'
+import { Unauthorized } from '@errors/unauthorized.error.ts'
 import type { Context } from 'hono'
 import { ZodError } from 'zod'
-import { ConflictError } from '../../application/errors/conflict.error.ts'
-import { Unauthorized } from '../../application/errors/unauthorized.error.ts'
 
 export function errorHandler(error: Error, c: Context): Response {
   if (error instanceof ZodError) {

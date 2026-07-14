@@ -1,5 +1,5 @@
+import type { SignUpUseCase } from '@use-cases/sign-up.usecase.ts'
 import { z } from 'zod'
-import type { SignUpUseCase } from '../../../application/use-cases/sign-up.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
 import type { AppContext } from '../types/app-context.ts'
 

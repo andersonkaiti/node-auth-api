@@ -1,5 +1,5 @@
+import type { CreateLeadUseCase } from '@use-cases/create-lead.usecase.ts'
 import { z } from 'zod'
-import type { CreateLeadUseCase } from '../../../application/use-cases/create-lead.usecase.ts'
 import type { IController } from '../interfaces/icontroller.ts'
 import type { AppContext } from '../types/app-context.ts'
 

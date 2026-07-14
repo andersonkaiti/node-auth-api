@@ -1,7 +1,7 @@
+import { env } from '@shared/env.ts'
 import type { Next } from 'hono'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
-import { env } from '../../../shared/env.ts'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
 import type { AppContext } from '../types/app-context.ts'
 

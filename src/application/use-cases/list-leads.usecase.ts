@@ -1,4 +1,4 @@
-import type { ILeadsRepository } from '../../domain/repositories/leads.repository.ts'
+import type { ILeadsRepository } from '@repositories/leads.repository.ts'
 
 interface IOutput {
   leads: {

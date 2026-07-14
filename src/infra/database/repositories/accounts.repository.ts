@@ -1,6 +1,6 @@
-import type { IAccount } from '../../../domain/entities/account.entity.ts'
-import type { IAccountsRepository } from '../../../domain/repositories/accounts.repository.ts'
-import { prisma } from '../prisma/index.ts'
+import { prisma } from '@database/prisma/index.ts'
+import type { IAccount } from '@entities/account.entity.ts'
+import type { IAccountsRepository } from '@repositories/accounts.repository.ts'
 
 export class AccountsRepository implements IAccountsRepository {
   async findAccountByEmail(email: string): Promise<IAccount | null> {
