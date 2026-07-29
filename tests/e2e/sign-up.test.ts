@@ -1,18 +1,8 @@
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
 import { app } from '../../src/infra/http/app.ts'
-
-let userRoleId: string
-
-beforeAll(async () => {
-  const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
-  if (!userRole) {
-    throw new Error('USER role not found')
-  }
-  userRoleId = userRole.id
-})
 
 afterAll(async () => {
   await prisma.account.deleteMany()
@@ -26,7 +16,6 @@ describe('Sign Up tests', () => {
         name: faker.person.fullName(),
         email: faker.internet.email(),
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     expect(response.statusCode).toBe(204)
@@ -41,7 +30,6 @@ describe('Sign Up tests', () => {
         name: faker.person.fullName(),
         email,
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     const response = await request(app)
@@ -50,7 +38,6 @@ describe('Sign Up tests', () => {
         name: faker.person.fullName(),
         email,
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     expect(response.statusCode).toBe(409)
@@ -135,7 +122,6 @@ describe('Sign Up tests', () => {
         name: 'AB',
         email: faker.internet.email(),
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     expect(response.statusCode).toBe(204)
@@ -146,7 +132,6 @@ describe('Sign Up tests', () => {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: '12345678',
-      roleId: userRoleId,
     })
 
     expect(response.statusCode).toBe(204)
@@ -159,7 +144,6 @@ describe('Sign Up tests', () => {
         name: faker.person.fullName(),
         email: faker.internet.email(),
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     expect(response.statusCode).toBe(204)

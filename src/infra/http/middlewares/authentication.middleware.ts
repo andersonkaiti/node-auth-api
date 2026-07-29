@@ -4,12 +4,12 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
 
-const jwtPayloadSchema = z.object({
-  sub: z.string(),
-  role: z.uuid(),
-})
-
 export class AuthenticationMiddleware implements IMiddleware {
+  private jwtPayloadSchema = z.object({
+    sub: z.string(),
+    role: z.uuid(),
+  })
+
   async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { authorization } = req.headers
 
@@ -27,7 +27,7 @@ export class AuthenticationMiddleware implements IMiddleware {
       }
 
       const rawPayload = jwt.verify(accessToken, env.JWT_SECRET)
-      const payload = jwtPayloadSchema.parse(rawPayload)
+      const payload = this.jwtPayloadSchema.parse(rawPayload)
 
       req.metadata = {
         ...req.metadata,
