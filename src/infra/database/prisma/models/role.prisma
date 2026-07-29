@@ -1,6 +1,6 @@
 model Role {
   id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String
+  name        String           @unique
   accounts    Account[]
   permissions RolePermission[]
 
