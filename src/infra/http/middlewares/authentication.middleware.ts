@@ -1,9 +1,8 @@
 import { env } from '@shared/env.ts'
-import type { Next } from 'hono'
+import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import type { IMiddleware } from '../interfaces/imiddleware.ts'
-import type { AppContext } from '../types/app-context.ts'
 
 const jwtPayloadSchema = z.object({
   sub: z.string(),
@@ -11,31 +10,36 @@ const jwtPayloadSchema = z.object({
 })
 
 export class AuthenticationMiddleware implements IMiddleware {
-  async handle(c: AppContext, next: Next): Promise<Response | void> {
-    const authorization = c.req.header('authorization')
+  async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { authorization } = req.headers
 
     if (!authorization) {
-      return c.json({ error: 'Invalid access token' }, 401)
+      res.status(401).json({ error: 'Invalid access token' })
+      return
     }
 
     try {
       const [prefix, accessToken] = authorization.split(' ')
 
       if (prefix !== 'Bearer') {
-        return c.json({ error: 'Invalid access token' }, 401)
+        res.status(401).json({ error: 'Invalid access token' })
+        return
       }
 
       const rawPayload = jwt.verify(accessToken, env.JWT_SECRET)
       const payload = jwtPayloadSchema.parse(rawPayload)
 
-      c.set('account', {
-        accountId: payload.sub,
-        role: payload.role,
-      })
+      req.metadata = {
+        ...req.metadata,
+        account: {
+          accountId: payload.sub,
+          role: payload.role,
+        },
+      }
 
-      await next()
+      next()
     } catch {
-      return c.json({ error: 'Invalid access token' }, 401)
+      res.status(401).json({ error: 'Invalid access token' })
     }
   }
 }

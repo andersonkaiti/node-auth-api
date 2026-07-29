@@ -1,11 +1,8 @@
 import { faker } from '@faker-js/faker'
-import { createAdaptorServer } from '@hono/node-server'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
 import { app } from '../../src/infra/http/app.ts'
-
-const server = createAdaptorServer(app)
 
 let userRoleId: string
 
@@ -26,14 +23,14 @@ describe('Sign In tests', () => {
     const email = faker.internet.email()
     const password = faker.internet.password({ length: 8 })
 
-    await request(server).post('/sign-up').send({
+    await request(app).post('/sign-up').send({
       name: faker.person.fullName(),
       email,
       password,
       roleId: userRoleId,
     })
 
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({ email, password })
 
@@ -43,7 +40,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 401 when email is not registered', async () => {
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({
         email: faker.internet.email(),
@@ -57,7 +54,7 @@ describe('Sign In tests', () => {
   it('should return 401 when password is wrong', async () => {
     const email = faker.internet.email()
 
-    await request(server)
+    await request(app)
       .post('/sign-up')
       .send({
         name: faker.person.fullName(),
@@ -66,7 +63,7 @@ describe('Sign In tests', () => {
         roleId: userRoleId,
       })
 
-    const response = await request(server).post('/sign-in').send({
+    const response = await request(app).post('/sign-in').send({
       email,
       password: 'wrong-password',
     })
@@ -76,7 +73,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when email is invalid', async () => {
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({
         email: 'not-an-email',
@@ -87,7 +84,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when password is shorter than 8 characters', async () => {
-    const response = await request(server).post('/sign-in').send({
+    const response = await request(app).post('/sign-in').send({
       email: faker.internet.email(),
       password: '1234567',
     })
@@ -96,7 +93,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when email is missing', async () => {
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({
         password: faker.internet.password({ length: 8 }),
@@ -106,7 +103,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when password is missing', async () => {
-    const response = await request(server).post('/sign-in').send({
+    const response = await request(app).post('/sign-in').send({
       email: faker.internet.email(),
     })
 
@@ -114,7 +111,7 @@ describe('Sign In tests', () => {
   })
 
   it('should return 400 when body is empty', async () => {
-    const response = await request(server).post('/sign-in').send({})
+    const response = await request(app).post('/sign-in').send({})
 
     expect(response.statusCode).toBe(400)
   })
@@ -123,14 +120,14 @@ describe('Sign In tests', () => {
     const email = faker.internet.email()
     const password = '12345678'
 
-    await request(server).post('/sign-up').send({
+    await request(app).post('/sign-up').send({
       name: faker.person.fullName(),
       email,
       password,
       roleId: userRoleId,
     })
 
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({ email, password })
 
@@ -141,14 +138,14 @@ describe('Sign In tests', () => {
     const email = faker.internet.email()
     const password = faker.internet.password({ length: 8 })
 
-    await request(server).post('/sign-up').send({
+    await request(app).post('/sign-up').send({
       name: faker.person.fullName(),
       email,
       password,
       roleId: userRoleId,
     })
 
-    const response = await request(server)
+    const response = await request(app)
       .post('/sign-in')
       .send({ email, password })
 

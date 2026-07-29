@@ -1,7 +1,7 @@
 import type { SignInUseCase } from '@use-cases/sign-in.usecase.ts'
+import type { Request, Response } from 'express'
 import { z } from 'zod'
 import type { IController } from '../interfaces/icontroller.ts'
-import type { AppContext } from '../types/app-context.ts'
 
 const signInSchema = z.object({
   email: z.email().min(1),
@@ -11,15 +11,14 @@ const signInSchema = z.object({
 export class SignInController implements IController {
   constructor(private readonly signInUseCase: SignInUseCase) {}
 
-  async handle(c: AppContext): Promise<Response> {
-    const body = await c.req.json()
-    const { email, password } = signInSchema.parse(body)
+  async handle(req: Request, res: Response): Promise<void> {
+    const { email, password } = signInSchema.parse(req.body)
 
     const { accessToken } = await this.signInUseCase.execute({
       email,
       password,
     })
 
-    return c.json({ accessToken }, 200)
+    res.status(200).json({ accessToken })
   }
 }

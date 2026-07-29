@@ -1,20 +1,33 @@
 import { ConflictError } from '@errors/conflict.error.ts'
 import { Unauthorized } from '@errors/unauthorized.error.ts'
-import type { Context } from 'hono'
+import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
 
-export function errorHandler(error: Error, c: Context): Response {
+export function errorHandler(
+  error: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): Response {
   if (error instanceof ZodError) {
-    return c.json({ error: error.issues }, 400)
+    return res.status(400).json({
+      error: error.issues,
+    })
   }
 
   if (error instanceof ConflictError) {
-    return c.json({ error: error.message }, 409)
+    return res.status(409).json({
+      error: error.message,
+    })
   }
 
   if (error instanceof Unauthorized) {
-    return c.json({ error: error.message }, 401)
+    return res.status(401).json({
+      error: error.message,
+    })
   }
 
-  return c.json({ error: error.message }, 500)
+  return res.status(500).json({
+    error: error.message,
+  })
 }

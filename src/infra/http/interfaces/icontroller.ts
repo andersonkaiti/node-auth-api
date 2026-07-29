@@ -1,5 +1,5 @@
-import type { AppContext } from '../types/app-context.ts'
+import type { Request, Response } from 'express'
 
 export interface IController {
-  handle(c: AppContext): Promise<Response>
+  handle(req: Request, res: Response): Promise<void>
 }
