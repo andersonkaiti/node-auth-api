@@ -26,7 +26,17 @@ export class RefreshTokenUseCase {
 
   async execute({ incomingRefreshToken }: IInput): Promise<IOutput> {
     const rawPayload = jwt.verify(incomingRefreshToken, this.refreshTokenSecret)
-    const payload = this.jwtPayloadSchema.parse(rawPayload)
+    const {
+      data: payload,
+      success,
+      error,
+    } = this.jwtPayloadSchema.safeParse(rawPayload)
+
+    if (!success) {
+      await this.refreshTokensRepository.delete(incomingRefreshToken)
+
+      throw new Unauthorized(error.message)
+    }
 
     const wasRefreshTokenAlreadyUsed =
       await this.refreshTokensRepository.findByToken({
@@ -34,6 +44,8 @@ export class RefreshTokenUseCase {
       })
 
     if (!wasRefreshTokenAlreadyUsed) {
+      await this.refreshTokensRepository.deleteManyByUserId(payload.sub)
+
       throw new Unauthorized('Invalid refresh token')
     }
 
