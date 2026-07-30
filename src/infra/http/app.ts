@@ -8,6 +8,7 @@ import express, { type Express } from 'express'
 import { middlewareAdapter } from './adapters/middleware.adapter.ts'
 import { routeAdapter } from './adapters/route.adapter.ts'
 import { errorHandler } from './error-handler.ts'
+import { makeRefreshTokenController } from './factories/make-refresh-token-controller.factory.ts'
 
 export const app: Express = express()
 
@@ -19,6 +20,7 @@ app.get('/', (_req, res) => {
 
 app.post('/sign-up', routeAdapter(makeSignUpController()))
 app.post('/sign-in', routeAdapter(makeSignInController()))
+app.post('/refresh-token', routeAdapter(makeRefreshTokenController()))
 
 app.get(
   '/leads',
