@@ -1,3 +1,5 @@
+import { Unauthorized } from '@errors/unauthorized.error.ts'
+import type { IRefreshTokensRepository } from '@repositories/refresh-tokens.repository.ts'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 
@@ -17,6 +19,7 @@ export class RefreshTokenUseCase {
   })
 
   constructor(
+    private readonly refreshTokensRepository: IRefreshTokensRepository,
     private readonly jwtSecret: string,
     private readonly refreshTokenSecret: string,
   ) {}
@@ -25,12 +28,27 @@ export class RefreshTokenUseCase {
     const rawPayload = jwt.verify(incomingRefreshToken, this.refreshTokenSecret)
     const payload = this.jwtPayloadSchema.parse(rawPayload)
 
+    const wasRefreshTokenAlreadyUsed =
+      await this.refreshTokensRepository.findByToken({
+        token: incomingRefreshToken,
+      })
+
+    if (!wasRefreshTokenAlreadyUsed) {
+      throw new Unauthorized('Invalid refresh token')
+    }
+
     const accessToken = jwt.sign(payload, this.jwtSecret, {
       expiresIn: '15s',
     })
 
     const refreshToken = jwt.sign(payload, this.refreshTokenSecret, {
       expiresIn: '10d',
+    })
+
+    await this.refreshTokensRepository.rotateRefreshToken({
+      incomingRefreshToken,
+      newRefreshToken: refreshToken,
+      accountId: payload.sub,
     })
 
     return {
