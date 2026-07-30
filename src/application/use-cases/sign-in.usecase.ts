@@ -1,7 +1,7 @@
 import { Unauthorized } from '@errors/unauthorized.error.ts'
 import type { IAccountsRepository } from '@repositories/accounts.repository.ts'
 import { compare } from 'bcryptjs'
-import jwt, { type SignOptions } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
 interface IInput {
   email: string
@@ -10,12 +10,14 @@ interface IInput {
 
 interface IOutput {
   accessToken: string
+  refreshToken: string
 }
 
 export class SignInUseCase {
   constructor(
     private readonly accountsRepository: IAccountsRepository,
     private readonly jwtSecret: string,
+    private readonly refreshTokenSecret: string,
   ) {}
 
   async execute({ email, password }: IInput): Promise<IOutput> {
@@ -36,14 +38,17 @@ export class SignInUseCase {
       role: account.roleId,
     }
 
-    const options: SignOptions = {
-      expiresIn: '1d',
-    }
+    const accessToken = jwt.sign(payload, this.jwtSecret, {
+      expiresIn: '15s',
+    })
 
-    const accessToken = jwt.sign(payload, this.jwtSecret, options)
+    const refreshToken = jwt.sign(payload, this.refreshTokenSecret, {
+      expiresIn: '10d',
+    })
 
     return {
       accessToken,
+      refreshToken,
     }
   }
 }

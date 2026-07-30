@@ -14,11 +14,14 @@ export class SignInController implements IController {
   async handle(req: Request, res: Response): Promise<void> {
     const { email, password } = this.signInSchema.parse(req.body)
 
-    const { accessToken } = await this.signInUseCase.execute({
+    const { accessToken, refreshToken } = await this.signInUseCase.execute({
       email,
       password,
     })
 
-    res.status(200).json({ accessToken })
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+    })
   }
 }
