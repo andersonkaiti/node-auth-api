@@ -1,25 +1,15 @@
 import { faker } from '@faker-js/faker'
 import request from 'supertest'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { prisma } from '../../src/infra/database/prisma/index.ts'
 import { app } from '../../src/infra/http/app.ts'
-
-let userRoleId: string
-
-beforeAll(async () => {
-  const userRole = await prisma.role.findFirst({ where: { name: 'USER' } })
-  if (!userRole) {
-    throw new Error('USER role not found')
-  }
-  userRoleId = userRole.id
-})
 
 afterAll(async () => {
   await prisma.account.deleteMany()
 })
 
 describe('Sign In tests', () => {
-  it('should sign in and return an access token', async () => {
+  it('should sign in and return access and refresh tokens', async () => {
     const email = faker.internet.email()
     const password = faker.internet.password({ length: 8 })
 
@@ -27,7 +17,6 @@ describe('Sign In tests', () => {
       name: faker.person.fullName(),
       email,
       password,
-      roleId: userRoleId,
     })
 
     const response = await request(app)
@@ -36,7 +25,9 @@ describe('Sign In tests', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toHaveProperty('accessToken')
+    expect(response.body).toHaveProperty('refreshToken')
     expect(typeof response.body.accessToken).toBe('string')
+    expect(typeof response.body.refreshToken).toBe('string')
   })
 
   it('should return 401 when email is not registered', async () => {
@@ -60,7 +51,6 @@ describe('Sign In tests', () => {
         name: faker.person.fullName(),
         email,
         password: faker.internet.password({ length: 8 }),
-        roleId: userRoleId,
       })
 
     const response = await request(app).post('/sign-in').send({
@@ -124,7 +114,6 @@ describe('Sign In tests', () => {
       name: faker.person.fullName(),
       email,
       password,
-      roleId: userRoleId,
     })
 
     const response = await request(app)
@@ -142,7 +131,6 @@ describe('Sign In tests', () => {
       name: faker.person.fullName(),
       email,
       password,
-      roleId: userRoleId,
     })
 
     const response = await request(app)
