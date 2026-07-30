@@ -5,6 +5,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   test: {
+    fileParallelism: false,
     globalSetup: ['./tests/global-setup.ts'],
     coverage: {
       provider: 'v8',
