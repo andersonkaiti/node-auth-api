@@ -2,14 +2,18 @@ import { prisma } from '@database/prisma/index.ts'
 import type { IRefreshToken } from '@entities/refresh-token.entity.ts'
 import type {
   IRefreshTokensRepository,
+  IRefreshTokenWithRole,
   IRotateRefreshToken,
 } from '@repositories/refresh-tokens.repository.ts'
 
 export class RefreshTokensRepository implements IRefreshTokensRepository {
-  async create({ token, accountId }: Omit<IRefreshToken, 'id'>): Promise<void> {
-    await prisma.refreshToken.create({
+  async create({
+    expiresAt,
+    accountId,
+  }: Omit<IRefreshToken, 'id' | 'issuedAt'>): Promise<IRefreshToken> {
+    return await prisma.refreshToken.create({
       data: {
-        token,
+        expiresAt,
         accountId,
       },
     })
@@ -17,38 +21,51 @@ export class RefreshTokensRepository implements IRefreshTokensRepository {
 
   async rotateRefreshToken({
     incomingRefreshToken,
-    newRefreshToken,
+    newRefreshTokenExpiringDate,
     accountId,
-  }: IRotateRefreshToken): Promise<void> {
-    await prisma.$transaction([
+  }: IRotateRefreshToken): Promise<IRefreshToken> {
+    const [refreshToken] = await prisma.$transaction([
       prisma.refreshToken.create({
         data: {
-          token: newRefreshToken,
           accountId,
+          expiresAt: newRefreshTokenExpiringDate,
         },
       }),
       prisma.refreshToken.deleteMany({
         where: {
-          token: incomingRefreshToken,
+          id: incomingRefreshToken,
         },
       }),
     ])
+
+    return refreshToken
   }
 
   async findByToken({
-    token,
-  }: Pick<IRefreshToken, 'token'>): Promise<IRefreshToken | null> {
+    id,
+  }: Pick<IRefreshToken, 'id'>): Promise<IRefreshTokenWithRole | null> {
     return await prisma.refreshToken.findFirst({
       where: {
-        token,
+        id,
+      },
+      include: {
+        account: {
+          select: {
+            role: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     })
   }
 
-  async delete(token: IRefreshToken['token']): Promise<void> {
+  async delete(id: IRefreshToken['id']): Promise<void> {
     await prisma.refreshToken.deleteMany({
       where: {
-        token,
+        id,
       },
     })
   }

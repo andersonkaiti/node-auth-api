@@ -1,7 +1,6 @@
 import { Unauthorized } from '@errors/unauthorized.error.ts'
 import type { IRefreshTokensRepository } from '@repositories/refresh-tokens.repository.ts'
-import jwt from 'jsonwebtoken'
-import { z } from 'zod'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
 
 interface IInput {
   incomingRefreshToken: string
@@ -13,59 +12,52 @@ interface IOutput {
 }
 
 export class RefreshTokenUseCase {
-  private jwtPayloadSchema = z.object({
-    sub: z.string(),
-    role: z.uuid(),
-  })
-
   constructor(
     private readonly refreshTokensRepository: IRefreshTokensRepository,
     private readonly jwtSecret: string,
-    private readonly refreshTokenSecret: string,
   ) {}
 
   async execute({ incomingRefreshToken }: IInput): Promise<IOutput> {
-    const rawPayload = jwt.verify(incomingRefreshToken, this.refreshTokenSecret)
-    const {
-      data: payload,
-      success,
-      error,
-    } = this.jwtPayloadSchema.safeParse(rawPayload)
+    const refreshToken = await this.refreshTokensRepository.findByToken({
+      id: incomingRefreshToken,
+    })
 
-    if (!success) {
-      await this.refreshTokensRepository.delete(incomingRefreshToken)
-
-      throw new Unauthorized(error.message)
+    if (!refreshToken) {
+      throw new Unauthorized('Invalid refresh token')
     }
 
-    const wasRefreshTokenAlreadyUsed =
-      await this.refreshTokensRepository.findByToken({
-        token: incomingRefreshToken,
-      })
+    const NOW = Date.now()
+    const REFRESH_TOKEN_EXPIRATION_DATE = refreshToken.expiresAt.getTime()
 
-    if (!wasRefreshTokenAlreadyUsed) {
-      await this.refreshTokensRepository.deleteManyByUserId(payload.sub)
+    if (NOW > REFRESH_TOKEN_EXPIRATION_DATE) {
+      await this.refreshTokensRepository.delete(refreshToken.id)
 
-      throw new Unauthorized('Invalid refresh token')
+      throw new Unauthorized('Expired refresh token')
+    }
+
+    const payload: JwtPayload = {
+      sub: refreshToken.accountId,
+      role: refreshToken?.account.role.name,
     }
 
     const accessToken = jwt.sign(payload, this.jwtSecret, {
       expiresIn: '15s',
     })
 
-    const refreshToken = jwt.sign(payload, this.refreshTokenSecret, {
-      expiresIn: '10d',
-    })
+    const expiresAt = new Date()
+    const EXPIRATION_TIME_IN_DAYS = 10
+    expiresAt.setDate(expiresAt.getDate() + EXPIRATION_TIME_IN_DAYS)
 
-    await this.refreshTokensRepository.rotateRefreshToken({
-      incomingRefreshToken,
-      newRefreshToken: refreshToken,
-      accountId: payload.sub,
-    })
+    const { id: newRefreshToken } =
+      await this.refreshTokensRepository.rotateRefreshToken({
+        incomingRefreshToken,
+        newRefreshTokenExpiringDate: expiresAt,
+        accountId: refreshToken.accountId,
+      })
 
     return {
       accessToken,
-      refreshToken,
+      refreshToken: newRefreshToken,
     }
   }
 }

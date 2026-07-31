@@ -27,7 +27,9 @@ describe('Sign In tests', () => {
     expect(response.body).toHaveProperty('accessToken')
     expect(response.body).toHaveProperty('refreshToken')
     expect(typeof response.body.accessToken).toBe('string')
-    expect(typeof response.body.refreshToken).toBe('string')
+    expect(response.body.refreshToken).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    )
   })
 
   it('should return 401 when email is not registered', async () => {

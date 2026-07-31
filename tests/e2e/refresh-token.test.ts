@@ -63,20 +63,36 @@ describe('Refresh Token tests', () => {
     expect(response.statusCode).toBe(400)
   })
 
-  it('should return 500 when refreshToken is invalid', async () => {
+  it('should return 401 when the refresh token does not exist', async () => {
+    const response = await request(app)
+      .post('/refresh-token')
+      .send({ refreshToken: faker.string.uuid() })
+
+    expect(response.statusCode).toBe(401)
+    expect(response.body).toEqual({ error: 'Invalid refresh token' })
+  })
+
+  it('should invalidate the old refresh token after it is rotated', async () => {
+    const refreshToken = await createRefreshToken()
+
+    const firstResponse = await request(app)
+      .post('/refresh-token')
+      .send({ refreshToken })
+
+    expect(firstResponse.statusCode).toBe(200)
+
+    const reuseResponse = await request(app)
+      .post('/refresh-token')
+      .send({ refreshToken })
+
+    expect(reuseResponse.statusCode).toBe(401)
+    expect(reuseResponse.body).toEqual({ error: 'Invalid refresh token' })
+  })
+
+  it('should return 500 when refreshToken is not a valid UUID', async () => {
     const response = await request(app)
       .post('/refresh-token')
       .send({ refreshToken: 'not-a-valid-token' })
-
-    expect(response.statusCode).toBe(500)
-  })
-
-  it('should return 500 when refreshToken is signed with the wrong secret', async () => {
-    const refreshToken = await createRefreshToken()
-
-    const response = await request(app)
-      .post('/refresh-token')
-      .send({ refreshToken: `${refreshToken}tampered` })
 
     expect(response.statusCode).toBe(500)
   })

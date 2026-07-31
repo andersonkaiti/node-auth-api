@@ -5,9 +5,5 @@ import { RefreshTokenUseCase } from '@use-cases/refresh-token.usecase.ts'
 export function makeRefreshTokenUseCase() {
   const refreshTokenRepository = new RefreshTokensRepository()
 
-  return new RefreshTokenUseCase(
-    refreshTokenRepository,
-    env.JWT_SECRET,
-    env.REFRESH_TOKEN_SECRET,
-  )
+  return new RefreshTokenUseCase(refreshTokenRepository, env.JWT_SECRET)
 }

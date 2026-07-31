@@ -11,6 +11,5 @@ export function makeSignInUseCase() {
     accountRepository,
     refreshTokenRepository,
     env.JWT_SECRET,
-    env.REFRESH_TOKEN_SECRET,
   )
 }

@@ -1,15 +1,25 @@
 import type { IRefreshToken } from '../entities/refresh-token.entity.ts'
 
 export interface IRotateRefreshToken {
-  incomingRefreshToken: IRefreshToken['token']
+  incomingRefreshToken: IRefreshToken['id']
   accountId: IRefreshToken['accountId']
-  newRefreshToken: IRefreshToken['token']
+  newRefreshTokenExpiringDate: IRefreshToken['expiresAt']
+}
+
+export interface IRefreshTokenWithRole extends IRefreshToken {
+  account: {
+    role: {
+      name: string
+    }
+  }
 }
 
 export interface IRefreshTokensRepository {
-  create(data: Omit<IRefreshToken, 'id'>): Promise<void>
-  findByToken(data: Pick<IRefreshToken, 'token'>): Promise<IRefreshToken | null>
-  rotateRefreshToken(data: IRotateRefreshToken): Promise<void>
-  delete(data: IRefreshToken['token']): Promise<void>
+  create(data: Omit<IRefreshToken, 'id' | 'issuedAt'>): Promise<IRefreshToken>
+  findByToken(
+    data: Pick<IRefreshToken, 'id'>,
+  ): Promise<IRefreshTokenWithRole | null>
+  rotateRefreshToken(data: IRotateRefreshToken): Promise<IRefreshToken>
+  delete(data: IRefreshToken['id']): Promise<void>
   deleteManyByUserId(accountId: IRefreshToken['accountId']): Promise<void>
 }

@@ -19,7 +19,6 @@ export class SignInUseCase {
     private readonly accountsRepository: IAccountsRepository,
     private readonly refreshTokensRepository: IRefreshTokensRepository,
     private readonly jwtSecret: string,
-    private readonly refreshTokenSecret: string,
   ) {}
 
   async execute({ email, password }: IInput): Promise<IOutput> {
@@ -44,13 +43,13 @@ export class SignInUseCase {
       expiresIn: '15s',
     })
 
-    const refreshToken = jwt.sign(payload, this.refreshTokenSecret, {
-      expiresIn: '10d',
-    })
+    const expiresAt = new Date()
+    const EXPIRATION_TIME_IN_DAYS = 10
+    expiresAt.setDate(expiresAt.getDate() + EXPIRATION_TIME_IN_DAYS)
 
-    await this.refreshTokensRepository.create({
-      token: refreshToken,
+    const { id: refreshToken } = await this.refreshTokensRepository.create({
       accountId: account.id,
+      expiresAt,
     })
 
     return {
