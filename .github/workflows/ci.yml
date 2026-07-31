@@ -28,6 +28,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
       JWT_SECRET: ci-secret
+      REFRESH_TOKEN_SECRET: ci-refresh-secret
 
     steps:
       - uses: actions/checkout@v4
