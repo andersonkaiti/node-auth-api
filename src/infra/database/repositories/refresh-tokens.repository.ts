@@ -51,11 +51,7 @@ export class RefreshTokensRepository implements IRefreshTokensRepository {
       include: {
         account: {
           select: {
-            role: {
-              select: {
-                name: true,
-              },
-            },
+            roleId: true,
           },
         },
       },

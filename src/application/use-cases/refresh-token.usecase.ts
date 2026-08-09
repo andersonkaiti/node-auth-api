@@ -37,7 +37,7 @@ export class RefreshTokenUseCase {
 
     const payload: JwtPayload = {
       sub: refreshToken.accountId,
-      role: refreshToken?.account.role.name,
+      role: refreshToken?.account.roleId,
     }
 
     const accessToken = jwt.sign(payload, this.jwtSecret, {

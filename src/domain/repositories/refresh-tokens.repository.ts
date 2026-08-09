@@ -8,9 +8,7 @@ export interface IRotateRefreshToken {
 
 export interface IRefreshTokenWithRole extends IRefreshToken {
   account: {
-    role: {
-      name: string
-    }
+    roleId: string
   }
 }
 
