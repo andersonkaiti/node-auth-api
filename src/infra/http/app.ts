@@ -4,6 +4,7 @@ import { makeCreateLeadController } from '@factories/make-create-lead-controller
 import { makeListLeadsController } from '@factories/make-list-leads-controller.factory.ts'
 import { makeSignInController } from '@factories/make-sign-in-controller.factory.ts'
 import { makeSignUpController } from '@factories/make-sign-up-controller.factory.ts'
+import cors from 'cors'
 import express, { type Express } from 'express'
 import { middlewareAdapter } from './adapters/middleware.adapter.ts'
 import { routeAdapter } from './adapters/route.adapter.ts'
@@ -13,6 +14,8 @@ import { makeRefreshTokenController } from './factories/make-refresh-token-contr
 export const app: Express = express()
 
 app.use(express.json())
+
+app.use(cors())
 
 app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Node Auth API' })
