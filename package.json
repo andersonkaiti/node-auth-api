@@ -24,11 +24,19 @@
   "prisma": {
     "schema": "src/infra/database/prisma/schema.prisma"
   },
+  "lint-staged": {
+    ".ts,.json": ["biome check --write"]
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional", "gitmoji"],
+    "rules": {
+      "scope-empty": [2, "never"]
+    }
+  },
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
-    "@commitlint/types": "^21.0.1",
     "@faker-js/faker": "^10.5.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/cors": "^2.8.19",

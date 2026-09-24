@@ -244,9 +244,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.0.2
         version: 21.0.2
-      '@commitlint/types':
-        specifier: ^21.0.1
-        version: 21.0.1
       '@faker-js/faker':
         specifier: ^10.5.0
         version: 10.5.0
