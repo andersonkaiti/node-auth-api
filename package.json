@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "src/infra/http/server.ts",
   "type": "module",
+  "packageManager": "pnpm@11.5.0",
   "scripts": {
     "dev": "tsx --env-file=.env --watch .",
     "start": "node dist/server.js",
