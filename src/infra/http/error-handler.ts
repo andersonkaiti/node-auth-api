@@ -9,6 +9,8 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ): Response {
+  console.error(error)
+
   if (error instanceof ZodError) {
     return res.status(400).json({
       error: error.issues,
@@ -28,6 +30,6 @@ export function errorHandler(
   }
 
   return res.status(500).json({
-    error: error.message,
+    error: 'Internal server error',
   })
 }
