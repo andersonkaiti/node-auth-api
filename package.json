@@ -20,6 +20,9 @@
     "db:reset": "prisma migrate reset"
   },
   "license": "ISC",
+  "prisma": {
+    "schema": "src/infra/database/prisma/schema.prisma"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
     "@commitlint/cli": "^21.0.2",
