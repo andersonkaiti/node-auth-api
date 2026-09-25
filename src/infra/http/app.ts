@@ -4,12 +4,14 @@ import { makeCreateLeadController } from '@factories/make-create-lead-controller
 import { makeListLeadsController } from '@factories/make-list-leads-controller.factory.ts'
 import { makeSignInController } from '@factories/make-sign-in-controller.factory.ts'
 import { makeSignUpController } from '@factories/make-sign-up-controller.factory.ts'
+import { apiReference } from '@scalar/express-api-reference'
 import cors from 'cors'
 import express, { type Express } from 'express'
 import { middlewareAdapter } from './adapters/middleware.adapter.ts'
 import { routeAdapter } from './adapters/route.adapter.ts'
 import { errorHandler } from './error-handler.ts'
 import { makeRefreshTokenController } from './factories/make-refresh-token-controller.factory.ts'
+import { generateOpenApiDocument } from './openapi/document.ts'
 
 export const app: Express = express()
 
@@ -20,6 +22,12 @@ app.use(cors())
 app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Node Auth API' })
 })
+
+app.get('/docs/json', (_req, res) => {
+  res.status(200).json(generateOpenApiDocument())
+})
+
+app.use('/docs', apiReference({ url: '/docs/json', theme: 'kepler' }))
 
 app.post('/sign-up', routeAdapter(makeSignUpController()))
 app.post('/sign-in', routeAdapter(makeSignInController()))

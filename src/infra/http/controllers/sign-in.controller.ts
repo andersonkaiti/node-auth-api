@@ -3,16 +3,16 @@ import type { Request, Response } from 'express'
 import { z } from 'zod'
 import type { IController } from '../interfaces/icontroller.ts'
 
-export class SignInController implements IController {
-  private signInSchema = z.object({
-    email: z.email().min(1),
-    password: z.string().min(8),
-  })
+export const signInSchema = z.object({
+  email: z.email().min(1),
+  password: z.string().min(8),
+})
 
+export class SignInController implements IController {
   constructor(private readonly signInUseCase: SignInUseCase) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { email, password } = this.signInSchema.parse(req.body)
+    const { email, password } = signInSchema.parse(req.body)
 
     const { accessToken, refreshToken } = await this.signInUseCase.execute({
       email,
